@@ -6,7 +6,29 @@ define([
 
   var Track = React.createClass({
     render: function () {
-      return (<div>{this.props.record.title}</div>)
+      var t = this.props.record;
+      return (
+        <div>
+          <div>
+            <h3>{t.title}</h3>
+          </div>
+          <div>
+            id: {t.id}<br />
+            uri: {t.uri}<br />
+            duration(ms): {t.duration}<br />
+            tags: {t.tag_list}<br />
+            description: {t.description}<br />
+            sharing: {t.sharing}<br />
+            favoritings_count: {t.favoritings_count}<br />
+            comment_count: {t.comment_count}<br />
+            plays: {t.playback_count}<br />
+            downloads: {t.download_count}<br />
+            state(finished or processing): {t.state}<br />
+            <img src={t.artwork_url} /><br />
+            <img src={t.waveform_url} height={50} width={Math.pow(t.duration, .5)} />
+          </div>
+        </div>
+        )
     }
   });
 
@@ -27,7 +49,7 @@ define([
 
       SC.connect(function() {
         SC.get('/me', function(me) {
-          alert('Hello, ' + me.username);
+//          alert('Hello, ' + me.username);
           this.updateTracks(me);
         }.bind(this));
       }.bind(this));
