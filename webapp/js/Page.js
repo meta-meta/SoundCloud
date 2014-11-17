@@ -8,7 +8,7 @@ define([
     render: function () {
       var t = this.props.record;
       return (
-        <div>
+        <div className="Track">
           <div>
             <h3>{t.title}</h3>
           </div>
@@ -23,7 +23,7 @@ define([
             comment_count: {t.comment_count}<br />
             plays: {t.playback_count}<br />
             downloads: {t.download_count}<br />
-            state(finished or processing): {t.state}<br />
+            state(finished or processing or failed): {t.state}<br />
             <img src={t.artwork_url} /><br />
             <img src={t.waveform_url} height={50} width={Math.pow(t.duration, .5)} />
           </div>
