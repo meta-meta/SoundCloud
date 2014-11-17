@@ -4,6 +4,8 @@ define([
 ], function (_, React, Forms, Cursor) {
   'use strict';
 
+  var KendoMultiSelect = Forms.KendoMultiSelect;
+
   var Track = React.createClass({
     render: function () {
       var t = this.props.record;
@@ -32,11 +34,35 @@ define([
     }
   });
 
+  var Tags = React.createClass({
+    render: function () {
+      var allTags = this.props.cursor.refine('all').value;
+
+      return (
+        <KendoMultiSelect
+          displayField='label'
+          valueField='id'
+          dataSource={allTags}
+          key={JSON.stringify(allTags)}
+          value={this.props.cursor.refine('selected').value}
+          onChange={this.onChange}
+        />
+      )
+    },
+
+    onChange: function (selection) {
+      this.props.cursor.refine('selected').onChange(selection);
+    }
+  });
+
   var App = React.createClass({
     getInitialState: function () {
       return {
         tracks: [],
-        tags: [],
+        tags: {
+          all: [],
+          selected: []
+        },
         loggedIn: false
       };
     },
@@ -65,6 +91,12 @@ define([
           })
           .flatten()
           .unique()
+          .map(function(tag) {
+            return {
+              id: tag,
+              label: tag
+            }
+          })
           .value();
       };
 
@@ -88,7 +120,7 @@ define([
             getTracks(page + 1);
           } else {
             console.log('got tracks:' + tracks);
-            this.setState({tracks: tracks, tags: parseTags(tracks)});
+            this.setState({tracks: tracks, tags: {all: parseTags(tracks), selected: []}});
           }
         }.bind(this));
       }.bind(this);
@@ -99,18 +131,20 @@ define([
     render: function () {
       var cursor = Cursor.build(this);
 
-      var tracks = _.map(this.state.tracks, function (record) {
+      var selectedTags = this.state.tags.selected;
+
+      var tracks = _.chain(this.state.tracks)
+        .filter(function (track) {
+          return selectedTags.length == 0 || !_.isEmpty(_.intersection(_.str.words(track.tag_list, '" "'), _.pluck(selectedTags, 'id')));
+        })
+        .map(function (record) {
         return (<Track record={record}/>);
       });
 
-      var tags = _.map(this.state.tags, function (tag) {
-        return (<li>{tag}</li>)
-      })
-
       return (
         <div className="App">
-          <ol>{tags}</ol>
-          <div>{tracks}</div>
+          <Tags cursor={cursor.refine('tags')} />
+          <div className="clearfix">{tracks}</div>
         </div>
         );
     }
