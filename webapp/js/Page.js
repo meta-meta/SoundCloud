@@ -27,7 +27,7 @@ define([
             downloads: {t.download_count}<br />
             state(finished or processing or failed): {t.state}<br />
             <img src={t.artwork_url} /><br />
-            <img src={t.waveform_url} height={50} width={Math.pow(t.duration, .5)} />
+            <img src={t.waveform_url} height={50} width={(100 * Math.pow(t.duration / this.props.longestDuration, .5)) + '%'} />
           </div>
         </div>
         )
@@ -133,12 +133,14 @@ define([
 
       var selectedTags = this.state.tags.selected;
 
+      var longestTrack = Math.max.apply(null, _.pluck(this.state.tracks, 'duration'));
+
       var tracks = _.chain(this.state.tracks)
         .filter(function (track) {
           return selectedTags.length == 0 || !_.isEmpty(_.intersection(_.str.words(track.tag_list, '" "'), _.pluck(selectedTags, 'id')));
         })
         .map(function (record) {
-        return (<Track record={record}/>);
+        return (<Track record={record} longestDuration={longestTrack}/>);
       });
 
       return (
