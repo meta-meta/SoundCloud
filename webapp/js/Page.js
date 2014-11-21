@@ -36,7 +36,12 @@ define([
 
   var Tags = React.createClass({
     render: function () {
-      var allTags = this.props.cursor.refine('all').value;
+      var allTags = _.map(this.props.cursor.refine('all').value, function(tag) {
+        return {
+          id: tag,
+          label: tag
+        }
+      });
 
       return (
         <KendoMultiSelect
@@ -84,22 +89,6 @@ define([
     updateTracks: function (me) {
       var tracks = [];
 
-      var parseTags = function(tracks) {
-        return _.chain(tracks)
-          .map(function(track) {
-            return _.str.words(track.tag_list, '" "'); // {tag_list: "\"tag one\" \"tag two\"}
-          })
-          .flatten()
-          .unique()
-          .map(function(tag) {
-            return {
-              id: tag,
-              label: tag
-            }
-          })
-          .value();
-      };
-
       var getTracks = function(page) {
         var pageSize = 200;
         var params = {
@@ -119,8 +108,15 @@ define([
           if(res.length == pageSize) {
             getTracks(page + 1);
           } else {
-            console.log('got tracks:' + tracks);
-            this.setState({tracks: tracks, tags: {all: parseTags(tracks), selected: []}});
+            console.log('tracks fetched: ' + tracks.length);
+
+            var tags = _.chain(tracks)
+              .map(parseTags)
+              .flatten()
+              .unique()
+              .value();
+
+            this.setState({tracks: tracks, tags: {all: tags, selected: []}});
           }
         }.bind(this));
       }.bind(this);
@@ -137,7 +133,7 @@ define([
 
       var tracks = _.chain(this.state.tracks)
         .filter(function (track) {
-          return selectedTags.length == 0 || !_.isEmpty(_.intersection(_.str.words(track.tag_list, '" "'), _.pluck(selectedTags, 'id')));
+          return selectedTags.length == 0 || !_.isEmpty(_.intersection(parseTags(track), _.pluck(selectedTags, 'id')));
         })
         .map(function (record) {
         return (<Track record={record} longestDuration={longestTrack}/>);
@@ -151,6 +147,28 @@ define([
         );
     }
   });
+
+  // ripped from SoundCloud minified javascript
+  function parseTags(track) {
+    var i, r = /(\w+)\:(\w+)=(.+)/;
+
+    function t(e) {
+      return !r.test(e)
+    }
+
+    function parse(e, i) {
+      var r, s, o, a = [],
+        l = [],
+        u = !1,
+        c = !0;
+      for (i || (i = {}), r = 0, s = e.length; s > r; ++r) o = e.charAt(r), '"' === o ? u = !u : " " === o || "," === o ? u ? l.push(o) : c || (c = !0, a.push(l.join("")), l.length = 0) : (c = !1, l.push(o));
+      return c || a.push(l.join("")), a.filter(i.includeMachineTags ? n : t).map(function(e) {
+        return e.replace(/"/g, "").replace(/\s\s+/, " ").trim()
+      }).filter(Boolean)
+    }
+
+    return parse(track.tag_list);
+  }
 
   function entrypoint(rootEl) {
     React.renderComponent(<App />, rootEl);
