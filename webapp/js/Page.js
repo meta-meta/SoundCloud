@@ -6,9 +6,29 @@ define([
 
   var KendoMultiSelect = Forms.KendoMultiSelect;
 
+  var TrackList = React.createClass({
+    render: function () {
+      var cursor = this.props.cursor.refine('tracks');
+      var selectedTags = this.props.cursor.refine('tags', 'selected').value;
+
+      var longestTrack = Math.max.apply(null, _.pluck(cursor.value, 'duration'));
+
+      var trackList = _.chain(cursor.value)
+        .filter(function (track) {
+          return selectedTags.length == 0 || !_.isEmpty(_.intersection(parseTags(track), _.pluck(selectedTags, 'id')));
+        })
+        .map(function (track, index) {
+          return (<Track cursor={cursor.refine(index)} longestDuration={longestTrack} key={JSON.stringify(track)} />);
+        })
+        .value();
+
+      return (<div className="clearfix">{trackList}</div>);
+    }
+  });
+
   var Track = React.createClass({
     render: function () {
-      var t = this.props.record;
+      var t = this.props.cursor.value;
       return (
         <div className="Track">
           <div>
@@ -19,6 +39,7 @@ define([
             uri: {t.uri}<br />
             duration(ms): {t.duration}<br />
             tags: {t.tag_list}<br />
+            <TagEditor trackCursor={this.props.cursor} />
             description: {t.description}<br />
             sharing: {t.sharing}<br />
             favoritings_count: {t.favoritings_count}<br />
@@ -57,6 +78,58 @@ define([
 
     onChange: function (selection) {
       this.props.cursor.refine('selected').onChange(selection);
+    }
+  });
+
+  var TagEditor = React.createClass({
+    render: function () {
+      var tags = parseTags(this.props.trackCursor.value);
+
+      var dataSource = _.map(tags, function(tag) {
+        return {
+          id: tag,
+          label: tag
+        }
+      });
+
+      //TODO: dataSource should be all tags so we get autocomplete.
+
+      return (
+        <KendoMultiSelect
+          displayField='label'
+          valueField='id'
+          dataSource={dataSource}
+          key={JSON.stringify(dataSource) + JSON.stringify(this.props.trackCursor.value)}
+          value={{id: tags}}
+          onChange={this.onChange}
+        />
+        );
+      //  value={{id: this.state.tags}} TODO: HACK  update wingspanforms
+    },
+
+    componentDidMount: function () {
+      $(this.getDOMNode()).find('input').first().keyup(this.onKeyUp);
+    },
+
+    onKeyUp: function (e) {
+      if (kendo.keys.ENTER == e.keyCode)
+      {
+//        $(this.getDOMNode()).find('input').first().unbind('keyup'); // the multiselect will be replaced
+
+        var newTag = e.target.value;
+        if(_.str.contains(_.str.trim(newTag), ' ')) {
+          newTag = _.str.quote(newTag);
+        }
+
+        var newTagList = this.props.trackCursor.value.tag_list + ' ' + newTag;
+
+        //TODO: post new tag
+        this.props.trackCursor.onChange(_.extend(this.props.trackCursor.value, {tag_list: newTagList}));
+      }
+    },
+
+    onChange: function (selection) {
+      // TODO: this will add or delete tags
     }
   });
 
@@ -127,22 +200,10 @@ define([
     render: function () {
       var cursor = Cursor.build(this);
 
-      var selectedTags = this.state.tags.selected;
-
-      var longestTrack = Math.max.apply(null, _.pluck(this.state.tracks, 'duration'));
-
-      var tracks = _.chain(this.state.tracks)
-        .filter(function (track) {
-          return selectedTags.length == 0 || !_.isEmpty(_.intersection(parseTags(track), _.pluck(selectedTags, 'id')));
-        })
-        .map(function (record) {
-        return (<Track record={record} longestDuration={longestTrack}/>);
-      });
-
       return (
         <div className="App">
           <Tags cursor={cursor.refine('tags')} />
-          <div className="clearfix">{tracks}</div>
+          <TrackList cursor={cursor} />
         </div>
         );
     }
