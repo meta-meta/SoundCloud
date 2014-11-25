@@ -14,11 +14,9 @@ define([
       var longestTrack = Math.max.apply(null, _.pluck(cursor.value, 'duration'));
 
       var trackList = _.chain(cursor.value)
-        .filter(function (track) {
-          return selectedTags.length == 0 || !_.isEmpty(_.intersection(parseTags(track), _.pluck(selectedTags, 'id')));
-        })
         .map(function (track, index) {
-          return (<Track cursor={cursor.refine(index)} longestDuration={longestTrack} key={JSON.stringify(track)} />);
+          var visible = selectedTags.length == 0 || !_.isEmpty(_.intersection(parseTags(track), _.pluck(selectedTags, 'id')));
+          return (<Track visible={visible} cursor={cursor.refine(index)} longestDuration={longestTrack} key={'track' + track.id} />);
         })
         .value();
 
@@ -29,8 +27,9 @@ define([
   var Track = React.createClass({
     render: function () {
       var t = this.props.cursor.value;
+
       return (
-        <div className="Track">
+        <div className="Track" style={this.props.visible ? {} : {display: 'none'}}>
           <div>
             <h3>{t.title}</h3>
           </div>
@@ -69,7 +68,7 @@ define([
           displayField='label'
           valueField='id'
           dataSource={allTags}
-          key={JSON.stringify(allTags)}
+          key={JSON.stringify(this.props.cursor.refine('all').value)}
           value={this.props.cursor.refine('selected').value}
           onChange={this.onChange}
         />
@@ -99,7 +98,7 @@ define([
           displayField='label'
           valueField='id'
           dataSource={dataSource}
-          key={JSON.stringify(dataSource) + JSON.stringify(this.props.trackCursor.value)}
+          key={'trackEditor' + this.props.trackCursor.value.id}
           value={{id: tags}}
           onChange={this.onChange}
         />
