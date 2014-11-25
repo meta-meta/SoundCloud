@@ -6,54 +6,6 @@ define([
 
   var KendoMultiSelect = Forms.KendoMultiSelect;
 
-  var TrackList = React.createClass({
-    render: function () {
-      var cursor = this.props.cursor.refine('tracks');
-      var selectedTags = this.props.cursor.refine('tags', 'selected').value;
-
-      var longestTrack = Math.max.apply(null, _.pluck(cursor.value, 'duration'));
-
-      var trackList = _.chain(cursor.value)
-        .map(function (track, index) {
-          var visible = selectedTags.length == 0 || !_.isEmpty(_.intersection(parseTags(track), _.pluck(selectedTags, 'id')));
-          return (<Track visible={visible} cursor={cursor.refine(index)} longestDuration={longestTrack} key={'track' + track.id} />);
-        })
-        .value();
-
-      return (<div className="clearfix">{trackList}</div>);
-    }
-  });
-
-  var Track = React.createClass({
-    render: function () {
-      var t = this.props.cursor.value;
-
-      return (
-        <div className="Track" style={this.props.visible ? {} : {display: 'none'}}>
-          <div>
-            <h3>{t.title}</h3>
-          </div>
-          <div>
-            id: {t.id}<br />
-            uri: {t.uri}<br />
-            duration(ms): {t.duration}<br />
-            tags: {t.tag_list}<br />
-            <TagEditor trackCursor={this.props.cursor} />
-            description: {t.description}<br />
-            sharing: {t.sharing}<br />
-            favoritings_count: {t.favoritings_count}<br />
-            comment_count: {t.comment_count}<br />
-            plays: {t.playback_count}<br />
-            downloads: {t.download_count}<br />
-            state(finished or processing or failed): {t.state}<br />
-            <img src={t.artwork_url} /><br />
-            <img src={t.waveform_url} height={50} width={(100 * Math.pow(t.duration / this.props.longestDuration, .5)) + '%'} />
-          </div>
-        </div>
-        )
-    }
-  });
-
   var Tags = React.createClass({
     render: function () {
       var allTags = _.map(this.props.cursor.refine('all').value, function(tag) {
@@ -72,7 +24,7 @@ define([
           value={this.props.cursor.refine('selected').value}
           onChange={this.onChange}
         />
-      )
+        )
     },
 
     onChange: function (selection) {
@@ -80,9 +32,76 @@ define([
     }
   });
 
-  var TagEditor = React.createClass({
+  var TrackList = React.createClass({
     render: function () {
-      var tags = parseTags(this.props.trackCursor.value);
+      var cursor = this.props.cursor.refine('tracks');
+      var tagsCursor = this.props.cursor.refine('tags');
+      var selectedTags = this.props.cursor.refine('tags', 'selected').value;
+
+      var longestTrack = Math.max.apply(null, _.pluck(cursor.value, 'duration'));
+
+      var trackList = _.chain(cursor.value)
+        .map(function (track, index) {
+          var visible = selectedTags.length == 0 || !_.isEmpty(_.intersection(parseTags(track), _.pluck(selectedTags, 'id')));
+          return (<Track visible={visible} cursor={cursor.refine(index)} tagsCursor={tagsCursor} longestDuration={longestTrack} key={'track' + track.id} />);
+        })
+        .value();
+
+      return (<div className="clearfix">{trackList}</div>);
+    }
+  });
+
+  var Track = React.createClass({
+    render: function () {
+      var t = this.props.cursor.value;
+
+      var tagWidget = _.isEqual(t.id, this.props.tagsCursor.refine('trackIdBeingEdited').value) ? (
+          <TagEdit
+            selectedTags={parseTags(t)}
+            trackCursor={this.props.cursor}
+            tagsCursor={this.props.tagsCursor}
+            key={JSON.stringify(this.props.tagsCursor.refine('all').value) + t.id + 'trax'}
+          />
+        ) : (
+          <TagView
+            selectedTags={parseTags(t)}
+            editTags={this.editTags}
+          />
+        );
+
+      return (
+        <div className="Track" style={this.props.visible ? {} : {display: 'none'}}>
+          <div>
+            <h3>{t.title}</h3>
+          </div>
+          <div>
+            id: {t.id}<br />
+            uri: {t.uri}<br />
+            duration(ms): {t.duration}<br />
+            tags: {t.tag_list}<br />
+            {tagWidget}
+            description: {t.description}<br />
+            sharing: {t.sharing}<br />
+            favoritings_count: {t.favoritings_count}<br />
+            comment_count: {t.comment_count}<br />
+            plays: {t.playback_count}<br />
+            downloads: {t.download_count}<br />
+            state(finished or processing or failed): {t.state}<br />
+            <img src={t.artwork_url} /><br />
+            <img src={t.waveform_url} height={50} width={(100 * Math.pow(t.duration / this.props.longestDuration, .5)) + '%'} />
+          </div>
+        </div>
+        )
+    },
+
+    editTags: function () {
+      this.props.tagsCursor.refine('trackIdBeingEdited').onChange(this.props.cursor.value.id);
+    }
+  });
+
+  var TagView = React.createClass({
+    render: function () {
+      var tags = this.props.selectedTags;
 
       var dataSource = _.map(tags, function(tag) {
         return {
@@ -91,15 +110,38 @@ define([
         }
       });
 
-      //TODO: dataSource should be all tags so we get autocomplete.
+      return (
+        <KendoMultiSelect
+          displayField='label'
+          valueField='id'
+          dataSource={dataSource}
+          value={{id: tags}}
+          disabled={true}
+        />
+        );
+      //  value={{id: this.state.tags}} TODO: HACK  update wingspanforms
+    },
+
+    componentDidMount: function () {
+      $(this.getDOMNode()).click(this.props.editTags);
+    }
+  });
+
+  var TagEdit = React.createClass({
+    render: function () {
+      var dataSource = _.map(this.props.tagsCursor.refine('all').value, function(tag) {
+        return {
+          id: tag,
+          label: tag
+        }
+      });
 
       return (
         <KendoMultiSelect
           displayField='label'
           valueField='id'
           dataSource={dataSource}
-          key={'trackEditor' + this.props.trackCursor.value.id}
-          value={{id: tags}}
+          value={{id: this.props.selectedTags}}
           onChange={this.onChange}
         />
         );
@@ -108,27 +150,58 @@ define([
 
     componentDidMount: function () {
       $(this.getDOMNode()).find('input').first().keyup(this.onKeyUp);
+
+      // just mounted because we clicked on the TagView component. focus on this component like nothing ever happened
+      $(this.getDOMNode()).find('input').first().focus();
+
+      this.setValue();
+      console.log('mount');
+    },
+
+    componentDidUpdate: function () {
+      console.log('update');
+      this.setValue();
+    },
+
+    setValue: function () {
+      var tags = this.props.selectedTags;
+      console.log('setVal: ' + tags);
+      $(this.getDOMNode()).find('select').first().data('kendoMultiSelect').value(tags);
+    },
+
+    setNewTagList: function (newTagList) {
+      //TODO: post new tags
+      this.props.trackCursor.onChange(_.extend(this.props.trackCursor.value, {tag_list: newTagList}));
     },
 
     onKeyUp: function (e) {
-      if (kendo.keys.ENTER == e.keyCode)
-      {
-//        $(this.getDOMNode()).find('input').first().unbind('keyup'); // the multiselect will be replaced
+      var allTags = this.props.tagsCursor.refine('all').value;
 
+      if (kendo.keys.ENTER == e.keyCode && !_.str.isBlank(e.target.value) && !_.contains(allTags, e.target.value))
+      {
+        // wrap tag in quotes if needed
         var newTag = e.target.value;
         if(_.str.contains(_.str.trim(newTag), ' ')) {
           newTag = _.str.quote(newTag);
         }
 
-        var newTagList = this.props.trackCursor.value.tag_list + ' ' + newTag;
+        // update master list of tags
+        this.props.tagsCursor.refine('all').onChange(_.union(allTags, newTag));
 
-        //TODO: post new tag
-        this.props.trackCursor.onChange(_.extend(this.props.trackCursor.value, {tag_list: newTagList}));
+        this.setNewTagList(this.props.trackCursor.value.tag_list + ' ' + newTag);
       }
     },
 
     onChange: function (selection) {
-      // TODO: this will add or delete tags
+      var tags = _.chain(selection)
+        .pluck('id')
+        .map(function (tag) {
+            return _.str.contains(_.str.trim(tag), ' ') ?
+              _.str.quote(tag) : tag;
+        })
+        .value();
+
+      this.setNewTagList(_.str.join.apply(null, [' '].concat(tags)));
     }
   });
 
@@ -138,7 +211,8 @@ define([
         tracks: [],
         tags: {
           all: [],
-          selected: []
+          selected: [],
+          trackIdBeingEdited: ''
         },
         loggedIn: false
       };
