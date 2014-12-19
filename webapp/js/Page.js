@@ -47,7 +47,7 @@ define([
                 })
                 .value();
 
-            return (<div className="clearfix">{trackList}</div>);
+            return (<div className="clearfix trackList">{trackList}<div className="clearfix" /></div>);
         }
     });
 
@@ -57,6 +57,7 @@ define([
 
             var tagWidget = _.isEqual(t.id, this.props.tagsCursor.refine('trackIdBeingEdited').value) ? (
                 <TagEdit
+                    className="tagEdit"
                     selectedTags={parseTags(t)}
                     trackCursor={this.props.cursor}
                     tagsCursor={this.props.tagsCursor}
@@ -64,44 +65,56 @@ define([
                 />
             ) : (
                 <TagView
+                    className="tagView"
                     selectedTags={parseTags(t)}
                     editTags={this.editTags}
                 />
             );
 
+            var trackStyle = {
+                backgroundImage: t.artwork_url && 'url(' + t.artwork_url + ')',
+                display: this.props.visible ? 'initial' : 'none'
+            };
+
+            var waveformStyle = {
+                backgroundImage: 'url(' + t.waveform_url + ')',
+                height: 50,
+                width: (100 * Math.pow(t.duration / this.props.longestDuration, .5)) + '%'
+            };
+
+            var description = t.description && (
+                <div className="description clearfix bordered">
+                    id: {t.id}
+                    <br />
+                    uri: {t.uri}
+                    <br />
+                    duration(ms): {t.duration}
+                    <br />
+                    tags: {t.tag_list}
+                    <br />
+
+                    description: {t.description}
+                    <br />
+                    sharing: {t.sharing}
+                    <br />
+                    favoritings_count: {t.favoritings_count}
+                    <br />
+                    comment_count: {t.comment_count}
+                    <br />
+                    plays: {t.playback_count}
+                    <br />
+                    downloads: {t.download_count}
+                    <br />
+                    state(finished or processing or failed): {t.state}
+                </div>
+            );
+
             return (
-                <div className="Track" style={this.props.visible ? {} : {display: 'none'}}>
-                    <div>
-                        <h3>{t.title}</h3>
-                    </div>
-                    <div>
-                        id: {t.id}
-                        <br />
-                        uri: {t.uri}
-                        <br />
-                        duration(ms): {t.duration}
-                        <br />
-                        tags: {t.tag_list}
-                        <br />
-            {tagWidget}
-                        description: {t.description}
-                        <br />
-                        sharing: {t.sharing}
-                        <br />
-                        favoritings_count: {t.favoritings_count}
-                        <br />
-                        comment_count: {t.comment_count}
-                        <br />
-                        plays: {t.playback_count}
-                        <br />
-                        downloads: {t.download_count}
-                        <br />
-                        state(finished or processing or failed): {t.state}
-                        <br />
-                        <img src={t.artwork_url} />
-                        <br />
-                        <img src={t.waveform_url} height={50} width={(100 * Math.pow(t.duration / this.props.longestDuration, .5)) + '%'} />
-                    </div>
+                <div className="track" style={trackStyle}>
+                    <h2>{t.title}</h2>
+                    {tagWidget}
+                    {description}
+                    <div className="waveform clearfix bordered" style={waveformStyle} />
                 </div>
             )
         },
