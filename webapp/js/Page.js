@@ -79,7 +79,7 @@ define([
             var waveformStyle = {
                 backgroundImage: 'url(' + t.waveform_url + ')',
                 height: 50,
-                width: (100 * Math.pow(t.duration / this.props.longestDuration, .5)) + '%'
+                width: (100 * Math.pow(t.duration / this.props.longestDuration, .25)) + '%'
             };
 
             var description = t.description && (
@@ -203,15 +203,15 @@ define([
             var allTags = this.props.tagsCursor.refine('all').value;
 
             if (kendo.keys.ENTER == e.keyCode && !_.str.isBlank(e.target.value) && !_.contains(allTags, e.target.value)) {
-                // wrap tag in quotes if needed
                 var newTag = e.target.value;
-                if (_.str.contains(_.str.trim(newTag), ' ')) {
-                    newTag = _.str.quote(newTag);
-                }
 
                 // update master list of tags
                 this.props.tagsCursor.refine('all').onChange(_.union(allTags, newTag));
 
+                // wrap tag in quotes if needed
+                if (_.str.contains(_.str.trim(newTag), ' ')) {
+                    newTag = _.str.quote(newTag);
+                }
                 this.setNewTagList(this.props.trackCursor.value.tag_list + ' ' + newTag);
             }
         },
