@@ -195,8 +195,12 @@ define([
         },
 
         setNewTagList: function (newTagList) {
-            //TODO: post new tags
-            this.props.trackCursor.onChange(_.extend(this.props.trackCursor.value, {tag_list: newTagList}));
+            var t = this.props.trackCursor.value;
+
+            SC.put(t.permalink_url, {track: {tag_list: newTagList}}, function(res){
+                console.log(res);
+                this.props.trackCursor.onChange(_.extend(t, {tag_list: newTagList}));
+            }.bind(this));
         },
 
         onKeyUp: function (e) {
