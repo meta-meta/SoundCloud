@@ -293,19 +293,22 @@ define([
                         getTracks(page + 1);
                     } else {
                         console.log('tracks fetched: ' + tracks.length);
-
-                        var tags = _.chain(tracks)
-                            .map(parseTags)
-                            .flatten()
-                            .unique()
-                            .value();
-
-                        this.setState({tracks: tracks, tags: {all: tags, selected: []}});
+                        this.loadTracks(tracks);
                     }
                 }.bind(this));
             }.bind(this);
 
             getTracks(0);
+        },
+
+        loadTracks: function (tracks) {
+            var tags = _.chain(tracks)
+                .map(parseTags)
+                .flatten()
+                .unique()
+                .value();
+
+            this.setState({tracks: tracks, tags: {all: tags, selected: []}});
         },
 
         render: function () {
