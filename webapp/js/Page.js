@@ -109,12 +109,22 @@ define([
                 </div>
             );
 
+            function timestring(millis) {
+                var s = Math.trunc(millis / 1000);
+                var h = Math.trunc(s / 3600);
+                var m = Math.trunc((s % 3600) / 60);
+                s %= 60;
+                return _.str.lpad(h, 2, '0') + ':' + _.str.lpad(m, 2, '0') +':' + _.str.lpad(s, 2, '0');
+            }
+
             return (
                 <div className="track" style={trackStyle}>
                     <h2>{t.title}</h2>
                     {tagWidget}
                     {description}
-                    <div className="waveform clearfix bordered" style={waveformStyle} />
+                    <div className="waveform clearfix bordered" style={waveformStyle} >
+                        <div className="duration">{timestring(t.duration)}</div>
+                    </div>
                 </div>
             )
         },
