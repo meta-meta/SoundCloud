@@ -1,9 +1,9 @@
 /** @jsx React.DOM */
 define([
     'underscore', 'react', 'wingspan-forms', 'react-cursor',
-    './Common', 'jsx!./TagSelect.js', 'jsx!./TrackList.js'
-], function (_, React, Forms, Cursor, TracksJson,
-             Common, TagSelect, TrackList) {
+    './Common', 'jsx!./TrackList', 'jsx!./TagSelect'
+], function (_, React, Forms, Cursor,
+             Common, TrackList, TagSelect) {
     'use strict';
 
     var App = React.createClass({
