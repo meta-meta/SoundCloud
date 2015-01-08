@@ -22,7 +22,8 @@ define([
         componentDidMount: function () {
             SC.initialize({
                 client_id: '816559a8805e07de7b585e3e588d5e7e',
-                redirect_uri: 'http://localhost:8000/callback.html'
+                redirect_uri: 'http://meta-meta.github.io/SoundCloud/callback.html'
+                //redirect_uri: 'http://localhost:8000/callback.html'
             });
 
             SC.connect(function () {
