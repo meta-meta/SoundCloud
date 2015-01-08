@@ -34,26 +34,26 @@ define([
             $(this.getDOMNode()).find('input').first().focus();
 
             this.setValue();
-            console.log('mount');
         },
 
         componentDidUpdate: function () {
-            console.log('update');
             this.setValue();
         },
 
         setValue: function () {
             var tags = this.props.selectedTags;
-            console.log('setVal: ' + tags);
             $(this.getDOMNode()).find('select').first().data('kendoMultiSelect').value(tags);
         },
 
         setNewTagList: function (newTagList) {
             var t = this.props.trackCursor.value;
 
-            SC.put(t.permalink_url, {track: {tag_list: newTagList}}, function(res){
-                console.log(res);
-                this.props.trackCursor.onChange(_.extend(t, {tag_list: newTagList}));
+            SC.put('/tracks/' + t.id , {track: {tag_list: newTagList}}, function(track, err){
+                if(err) {
+                    console.log('error updating track');
+                } else {
+                    this.props.trackCursor.onChange(_.extend(t, {tag_list: track.tag_list}));
+                }
             }.bind(this));
         },
 
