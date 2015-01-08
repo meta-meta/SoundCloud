@@ -1,10 +1,12 @@
 /** @jsx React.DOM */
 define([
-    'underscore', 'react', './Common', 'jsx!./Track'
-], function (_, React, Common, Track) {
+    'underscore', 'react', 'react-cursor', './Common', 'jsx!./Track'
+], function (_, React, Cursor, Common, Track) {
     'use strict';
 
     var TrackList = React.createClass({
+        mixins:[Cursor.ImmutableOptimizations(['cursor'])],
+
         render: function () {
             var cursor = this.props.cursor.refine('tracks');
             var tagsCursor = this.props.cursor.refine('tags');

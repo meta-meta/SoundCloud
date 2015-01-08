@@ -1,13 +1,15 @@
 /** @jsx React.DOM */
 define([
-    'underscore', 'react', 'wingspan-forms', './Common', 'jsx!./TagView', 'jsx!./TagEdit'
-], function (_, React, Forms, Common, TagView, TagEdit) {
+    'underscore', 'react', 'react-cursor', 'wingspan-forms', './Common', 'jsx!./TagView', 'jsx!./TagEdit'
+], function (_, React, Cursor, Forms, Common, TagView, TagEdit) {
     'use strict';
 
     var KendoText = Forms.KendoText;
     var MultilineText = Forms.MultilineText;
 
     var Track = React.createClass({
+        mixins:[Cursor.ImmutableOptimizations(['cursor', 'tagsCursor'])],
+
         render: function () {
             var t = this.props.cursor.value;
 

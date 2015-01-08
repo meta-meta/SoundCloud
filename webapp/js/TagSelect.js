@@ -1,12 +1,14 @@
 /** @jsx React.DOM */
 define([
-    'underscore', 'react', 'wingspan-forms'
-], function (_, React, Forms) {
+    'underscore', 'react', 'react-cursor', 'wingspan-forms'
+], function (_, React, Cursor, Forms) {
     'use strict';
 
     var KendoMultiSelect = Forms.KendoMultiSelect;
 
     var TagSelect = React.createClass({
+        mixins:[Cursor.ImmutableOptimizations(['cursor'])],
+
         render: function () {
             var allTags = _.map(this.props.cursor.refine('all').value, function (tag) {
                 return {
