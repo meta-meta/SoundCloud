@@ -5,6 +5,7 @@ define([
     'use strict';
 
     var KendoText = Forms.KendoText;
+    var MultilineText = Forms.MultilineText;
 
     var Track = React.createClass({
         render: function () {
@@ -76,12 +77,17 @@ define([
                 <div className="track" style={trackStyle}>
                     <KendoText value={t.title} />
                     {tagWidget}
-                    {description}
+                    <MultilineText className="description" value={t.description} onChange={this.onDescriptionChange} />
                     <div className="waveform clearfix bordered" style={waveformStyle} >
                         <div className="duration">{timestring(t.duration)}</div>
                     </div>
                 </div>
             )
+        },
+
+        onDescriptionChange: function (val) {
+            //console.log(val);
+            this.props.cursor.refine('description').onChange(val);
         },
 
         editTags: function () {

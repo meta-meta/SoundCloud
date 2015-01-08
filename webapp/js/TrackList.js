@@ -20,6 +20,17 @@ define([
                 .value();
 
             return (<div className="clearfix trackList">{trackList}<div className="clearfix" /></div>);
+        },
+
+        componentDidUpdate: function(prevProps, prevState) {
+            if(prevProps.cursor.refine('tracks').value.length != this.props.cursor.refine('tracks').value.length) {
+                console.log('heyo');
+                $('textarea').on( 'keyup', function (){
+                    $(this).height( 0 );
+                    $(this).height( this.scrollHeight );
+                });
+                $('textarea').keyup();
+            }
         }
     });
 

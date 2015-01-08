@@ -44,6 +44,10 @@ body {
       background: none;
     }
 
+    input.k-textbox:focus {
+      background: #333;
+    }
+
     .formField {
       width: 60%;
       margin-bottom: 10px;
@@ -55,10 +59,13 @@ body {
       border-radius: 5px;
     }
 
-    .description {
+    textarea {
+      display: block;
       background: #ddd;
       width: 60%;
       margin: 10px 0;
+      resize: none;
+      overflow-y: hidden;
     }
 
     .waveform {
