@@ -44,8 +44,9 @@ body {
       background: none;
     }
 
-    input.k-textbox:focus {
+    input.k-textbox:focus, textarea.k-textbox:focus {
       background: #333;
+      color: #ddd;
     }
 
     .formField {
@@ -54,12 +55,12 @@ body {
       padding: 0;
     }
 
-    .bordered, .formFieldMultiselect .formElement .k-multiselect {
+    .bordered, .formFieldMultiselect .formElement .k-multiselect, textarea.k-textbox {
       border: #666 2px solid;
       border-radius: 5px;
     }
 
-    textarea {
+    textarea.k-textbox {
       display: block;
       background: #ddd;
       width: 60%;

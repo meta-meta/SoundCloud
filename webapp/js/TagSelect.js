@@ -21,9 +21,11 @@ define([
                 <KendoMultiSelect
                     displayField='label'
                     valueField='id'
+                    template='#= label#'
                     dataSource={allTags}
                     key={JSON.stringify(this.props.cursor.refine('all').value)}
                     value={this.props.cursor.refine('selected').value}
+                    placeholder="Filter by Tags"
                     onChange={this.onChange}
                 />
             )

@@ -21,8 +21,10 @@ define([
                 <KendoMultiSelect
                     displayField='label'
                     valueField='id'
+                    template='#= label#'
                     dataSource={dataSource}
                     value={{id: this.props.selectedTags}}
+                    placeholder="Tags"
                     onChange={this.onChange}
                 />
             );

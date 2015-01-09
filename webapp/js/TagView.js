@@ -23,6 +23,7 @@ define([
                     valueField='id'
                     dataSource={dataSource}
                     value={{id: tags}}
+                    placeholder="Tags"
                     disabled={true}
                 />
             );
