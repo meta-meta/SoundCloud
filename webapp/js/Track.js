@@ -41,31 +41,16 @@ define([
             };
 
             var description = t.description && (
-                    <div className="description clearfix bordered">
-                        id: {t.id}
-                        <br />
-                        uri: {t.uri}
-                        <br />
-                        duration(ms): {t.duration}
-                        <br />
-                        tags: {t.tag_list}
-                        <br />
+                <div className="description clearfix bordered">description: {t.description}</div>
+            );
 
-                        description: {t.description}
-                        <br />
-                        sharing: {t.sharing}
-                        <br />
-                        favoritings_count: {t.favoritings_count}
-                        <br />
-                        comment_count: {t.comment_count}
-                        <br />
-                        plays: {t.playback_count}
-                        <br />
-                        downloads: {t.download_count}
-                        <br />
-                        state(finished or processing or failed): {t.state}
-                    </div>
-                );
+            //sharing: {t.sharing}
+
+            var stateClassname = {
+                finished: 'fa fa-cloud fa-3x',
+                processing: 'fa fa-gears fa-3x',
+                failed: 'fa fa-warning fa-3x'
+            }[t.state];
 
             function timestring(millis) {
                 var s = Math.trunc(millis / 1000);
@@ -74,17 +59,29 @@ define([
                 s %= 60;
                 return _.str.lpad(h, 2, '0') + ':' + _.str.lpad(m, 2, '0') +':' + _.str.lpad(s, 2, '0');
             }
-
             return (
                 <div className="track" style={trackStyle}>
                     <KendoText value={t.title} />
                     {tagWidget}
-                    <MultilineText className="description" value={t.description} onChange={this.onDescriptionChange} />
+                    <MultilineText
+                        className="description"
+                        value={t.description}
+                        placeholder="Description"
+                        onChange={this.onDescriptionChange}
+                    />
+                    <div>
+                        <i className={stateClassname}>:</i>
+                        <i className="fa fa-play fa-2x">{t.playback_count}</i>
+                        <i className="fa fa-heart fa-2x">{t.favoritings_count}</i>
+                        <i className="fa fa-comments fa-2x">{t.comment_count}</i>
+                        <i className="fa fa-cloud-download fa-2x">{t.download_count}</i>
+                    </div>
                     <div className="waveform clearfix bordered" style={waveformStyle} >
                         <div className="duration">{timestring(t.duration)}</div>
                     </div>
                 </div>
             )
+
         },
 
         onDescriptionChange: function (val) {
