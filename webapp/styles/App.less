@@ -3,35 +3,80 @@
 @import (less) "../lib/wingspan-forms/wingspan-forms.css";
 @import (less) "../lib/react-json-editor/react-json-editor.css";
 
+@dark-grey: #666;
+@med-grey: #aaa;
+@light-grey: #ccc;
+@lighter-grey: #ddd;
+
+@control-panel-height: 220px;
+
 body {
-  overflow: scroll
+  overflow: scroll;
+  background-color: @med-grey;
 }
 
-.App {
+.app {
   padding: 10px;
-  background-color: #aaa;
+  padding-top: @control-panel-height;
+
+  .formFieldMultiselect .formElement .k-multiselect .k-multiselect-wrap {
+    li {
+      border-width: 2px!important;
+      margin: 1px;
+    }
+  }
+
+  .controlPanel {
+    background: @dark-grey;
+    width: 100%;
+    height: @control-panel-height;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    border-bottom: 5px solid rgb(129, 109, 127);
+
+    .formField .formElement {
+      width: 60%;
+      padding: 10px;
+    }
+  }
 
   .trackList {
 
   }
 
   .track {
-    border: 2px solid #666;
+    border: 2px solid @dark-grey;
     border-radius: 10px;
-    background-color: #ccc;
+    background-color: @light-grey;
     padding: 10px;
     margin: 5px 0;
     overflow: hidden;
     float: left;
-    width: 80%;
+    width: 100%;
+    box-sizing: border-box;
 
     background-repeat: no-repeat;
     background-size: contain;
     background-position: 100%;
 
+    // mixin
+    .editing {
+      background: #333;
+      color: @lighter-grey;
+    }
+
+    // mixin
+    .display {
+      color: @dark-grey;
+      background: @lighter-grey;
+    }
+
+    // Track Title
     input.k-textbox {
       font-size: 3em;
-      color: #ccc;
+      color: @light-grey;
       margin: 0;
       font-family: monospace;
       text-shadow: 1px 2px 6px #3C303A;
@@ -45,9 +90,31 @@ body {
     }
 
     input.k-textbox:focus, textarea.k-textbox:focus {
-      background: #333;
-      color: #ddd;
+      .editing;
     }
+
+    // TagView
+    .formFieldMultiselect.formFieldDisabled .formElement .k-multiselect {
+      opacity: 1;
+
+      .k-multiselect-wrap {
+        .display;
+
+        li {
+          .display;
+        }
+      }
+    }
+
+    // TagEdit
+    .formFieldMultiselect .formElement .k-multiselect .k-multiselect-wrap {
+      .editing;
+
+      li {
+        .editing;
+      }
+    }
+
 
     .formField {
       width: 60%;
@@ -55,14 +122,21 @@ body {
       padding: 0;
     }
 
-    .bordered, .formFieldMultiselect .formElement .k-multiselect, textarea.k-textbox {
-      border: #666 2px solid;
+    // mixin and a class
+    .bordered {
+      border: @dark-grey 2px solid;
       border-radius: 5px;
     }
 
+    // multiselect and text area
+    .formFieldMultiselect .formElement .k-multiselect, textarea.k-textbox {
+      .bordered;
+    }
+
+    // description
     textarea.k-textbox {
+      .display;
       display: block;
-      background: #ddd;
       width: 60%;
       margin: 10px 0;
       resize: none;
@@ -79,7 +153,7 @@ body {
     }
 
     .waveform {
-      background: #666;
+      background: @dark-grey;
       background-size: 100% 50px;
       position: relative;
 
@@ -94,8 +168,10 @@ body {
       }
     }
 
-
+    .waveform:hover {
+      border-color: #23C5CC;
+      background-color: #94DFDF;
+      cursor: pointer;
+    }
   }
-
-
 }

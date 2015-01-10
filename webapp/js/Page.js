@@ -1,9 +1,9 @@
 /** @jsx React.DOM */
 define([
     'underscore', 'react', 'wingspan-forms', 'react-cursor',
-    './Common', 'jsx!./TrackList', 'jsx!./TagSelect'
+    './Common', 'jsx!./TrackList', 'jsx!./ControlPanel'
 ], function (_, React, Forms, Cursor,
-             Common, TrackList, TagSelect) {
+             Common, TrackList, ControlPanel) {
     'use strict';
 
     var App = React.createClass({
@@ -15,6 +15,7 @@ define([
                     selected: [],
                     trackIdBeingEdited: ''
                 },
+                selectedTrackUrl: '',
                 loggedIn: false
             };
         },
@@ -79,8 +80,8 @@ define([
             var cursor = Cursor.build(this);
 
             return (
-                <div className="App">
-                    <TagSelect cursor={cursor.refine('tags')} />
+                <div className="app">
+                    <ControlPanel cursor={cursor} />
                     <TrackList cursor={cursor} />
                 </div>
             );

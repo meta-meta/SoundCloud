@@ -8,7 +8,7 @@ define([
     var MultilineText = Forms.MultilineText;
 
     var Track = React.createClass({
-        mixins:[Cursor.ImmutableOptimizations(['cursor', 'tagsCursor'])],
+        mixins:[Cursor.ImmutableOptimizations(['cursor', 'tagsCursor', 'selectedTrackCursor'])],
 
         render: function () {
             var t = this.props.cursor.value;
@@ -85,12 +85,20 @@ define([
         },
 
         onDescriptionChange: function (val) {
-            //console.log(val);
             this.props.cursor.refine('description').onChange(val);
         },
 
         editTags: function () {
             this.props.tagsCursor.refine('trackIdBeingEdited').onChange(this.props.cursor.value.id);
+        },
+
+        selectTrack: function () {
+            var t = this.props.cursor.value;
+            this.props.selectedTrackCursor.onChange(t.secret_uri);
+        },
+
+        componentDidMount: function () {
+            $(this.getDOMNode()).find('.waveform').click(this.selectTrack);
         }
     });
 

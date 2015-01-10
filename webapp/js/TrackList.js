@@ -17,8 +17,8 @@ define([
             var trackList = _.chain(cursor.value)
                 .map(function (track, index) {
                     var visible = selectedTags.length == 0 || !_.isEmpty(_.intersection(Common.parseTags(track), _.pluck(selectedTags, 'id')));
-                    return (<Track visible={visible} cursor={cursor.refine(index)} tagsCursor={tagsCursor} longestDuration={longestTrack} key={'track' + track.id} />);
-                })
+                    return (<Track visible={visible} cursor={cursor.refine(index)} tagsCursor={tagsCursor} selectedTrackCursor={this.props.cursor.refine('selectedTrackUrl')} longestDuration={longestTrack} key={'track' + track.id} />);
+                }.bind(this))
                 .value();
 
             return (<div className="clearfix trackList">{trackList}<div className="clearfix" /></div>);
