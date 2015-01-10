@@ -27,12 +27,17 @@ define([
                 //redirect_uri: 'http://localhost:8000/callback.html'
             });
 
+            this.logIn();
+        },
+
+        logIn: function () {
+            var self = this;
             SC.connect(function () {
+                self.cursor.refine('loggedIn').onChange(true);
                 SC.get('/me', function (me) {
-//          alert('Hello, ' + me.username);
-                    this.updateTracks(me);
-                }.bind(this));
-            }.bind(this));
+                    self.updateTracks(me);
+                });
+            });
         },
 
         updateTracks: function (me) {
@@ -77,15 +82,21 @@ define([
         },
 
         render: function () {
-            var cursor = Cursor.build(this);
+            this.cursor = Cursor.build(this);
+
+            var logInButton = this.cursor.refine('loggedIn').value ? '' :
+                (<button id="notLoggedIn" className="k-button" onClick={this.logIn} >Log in to SoundCloud</button>);
 
             return (
                 <div className="app">
-                    <ControlPanel cursor={cursor} />
-                    <TrackList cursor={cursor} />
+                    <ControlPanel cursor={this.cursor} />
+                    <TrackList cursor={this.cursor} />
+                    {logInButton}
                 </div>
             );
         }
+
+
     });
 
     function entrypoint(rootEl) {

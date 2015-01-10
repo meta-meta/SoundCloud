@@ -17,16 +17,31 @@ define([
             var trackList = _.chain(cursor.value)
                 .map(function (track, index) {
                     var visible = selectedTags.length == 0 || !_.isEmpty(_.intersection(Common.parseTags(track), _.pluck(selectedTags, 'id')));
-                    return (<Track visible={visible} cursor={cursor.refine(index)} tagsCursor={tagsCursor} selectedTrackCursor={this.props.cursor.refine('selectedTrackUrl')} longestDuration={longestTrack} key={'track' + track.id} />);
+                    return (
+                        <Track
+                            visible={visible}
+                            cursor={cursor.refine(index)}
+                            tagsCursor={tagsCursor}
+                            selectedTrackCursor={this.props.cursor.refine('selectedTrackUrl')}
+                            longestDuration={longestTrack}
+                            key={'track' + track.id}
+                        />
+                    );
                 }.bind(this))
                 .value();
 
-            return (<div className="clearfix trackList">{trackList}<div className="clearfix" /></div>);
+            var loading = this.props.cursor.refine('loggedIn').value && trackList.length == 0 ? (<span className="fa-5x"><i className="fa fa-refresh fa-spin" />Loading Tracks</span>) : '';
+            return (
+                <div className="clearfix trackList">
+                    {loading}
+                    {trackList}
+                    <div className="clearfix" />
+                </div>
+            );
         },
 
         componentDidUpdate: function(prevProps, prevState) {
             if(prevProps.cursor.refine('tracks').value.length != this.props.cursor.refine('tracks').value.length) {
-                console.log('heyo');
                 $('textarea').on( 'keyup', function (){
                     $(this).height( 0 );
                     $(this).height( this.scrollHeight );
