@@ -51,9 +51,9 @@ define([
             }[t.state];
 
             function timestring(millis) {
-                var s = Math.trunc(millis / 1000);
-                var h = Math.trunc(s / 3600);
-                var m = Math.trunc((s % 3600) / 60);
+                var s = Math.floor(millis / 1000);
+                var h = Math.floor(s / 3600);
+                var m = Math.floor((s % 3600) / 60);
                 s %= 60;
                 return _.str.lpad(h, 2, '0') + ':' + _.str.lpad(m, 2, '0') +':' + _.str.lpad(s, 2, '0');
             }
