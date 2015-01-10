@@ -1,11 +1,9 @@
 /** @jsx React.DOM */
 define([
     'underscore', 'react', 'react-cursor', 'wingspan-forms', './Common',
-    'jsx!./TagView', 'jsx!./TagEdit', 'jsx!./DescriptionEdit'
-], function (_, React, Cursor, Forms, Common, TagView, TagEdit, DescriptionEdit) {
+    'jsx!./TagView', 'jsx!./TagEdit', 'jsx!./TitleEdit', 'jsx!./DescriptionEdit'
+], function (_, React, Cursor, Forms, Common, TagView, TagEdit, TitleEdit, DescriptionEdit) {
     'use strict';
-
-    var KendoText = Forms.KendoText;
 
     var Track = React.createClass({
         mixins:[Cursor.ImmutableOptimizations(['cursor', 'tagsCursor', 'selectedTrackCursor'])],
@@ -61,7 +59,10 @@ define([
             }
             return (
                 <div className="track" style={trackStyle}>
-                    <KendoText value={t.title} />
+                    <TitleEdit
+                        cursor={this.props.cursor.refine('title')}
+                        trackId={this.props.cursor.refine('id').value}
+                    />
                     {tagWidget}
                     <DescriptionEdit
                         cursor={this.props.cursor.refine('description')}
