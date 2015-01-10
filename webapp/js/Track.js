@@ -1,11 +1,11 @@
 /** @jsx React.DOM */
 define([
-    'underscore', 'react', 'react-cursor', 'wingspan-forms', './Common', 'jsx!./TagView', 'jsx!./TagEdit'
-], function (_, React, Cursor, Forms, Common, TagView, TagEdit) {
+    'underscore', 'react', 'react-cursor', 'wingspan-forms', './Common',
+    'jsx!./TagView', 'jsx!./TagEdit', 'jsx!./DescriptionEdit'
+], function (_, React, Cursor, Forms, Common, TagView, TagEdit, DescriptionEdit) {
     'use strict';
 
     var KendoText = Forms.KendoText;
-    var MultilineText = Forms.MultilineText;
 
     var Track = React.createClass({
         mixins:[Cursor.ImmutableOptimizations(['cursor', 'tagsCursor', 'selectedTrackCursor'])],
@@ -63,11 +63,9 @@ define([
                 <div className="track" style={trackStyle}>
                     <KendoText value={t.title} />
                     {tagWidget}
-                    <MultilineText
-                        className="description"
-                        value={t.description}
-                        placeholder="Description"
-                        onChange={this.onDescriptionChange}
+                    <DescriptionEdit
+                        cursor={this.props.cursor.refine('description')}
+                        trackId={this.props.cursor.refine('id').value}
                     />
                     <div>
                         <i className={stateClassname}>:</i>
@@ -82,10 +80,6 @@ define([
                 </div>
             )
 
-        },
-
-        onDescriptionChange: function (val) {
-            this.props.cursor.refine('description').onChange(val);
         },
 
         editTags: function () {
