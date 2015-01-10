@@ -8,4 +8,4 @@ Single page front-end app for SoundCloud. For those of us who have a lot of trac
 * Edit title (enter or click off to save) and description(ctrl+enter or click off to save)
 * Load track by clicking on the waveform
 
-![screenshot](http://http://meta-meta.github.io/SoundCloud/webapp/demo.jpg)
+![screenshot](http://meta-meta.github.io/SoundCloud/webapp/demo.jpg)
