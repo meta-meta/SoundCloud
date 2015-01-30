@@ -16,6 +16,7 @@ define([
                     trackIdBeingEdited: ''
                 },
                 selectedTrackUrl: '',
+                showPublishedOnly: false,
                 loggedIn: false
             };
         },

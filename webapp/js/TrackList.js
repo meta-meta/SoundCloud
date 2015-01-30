@@ -16,7 +16,9 @@ define([
 
             var trackList = _.chain(cursor.value)
                 .map(function (track, index) {
-                    var visible = selectedTags.length == 0 || !_.isEmpty(_.intersection(Common.parseTags(track), _.pluck(selectedTags, 'id')));
+                    var tagCond = selectedTags.length == 0 || !_.isEmpty(_.intersection(Common.parseTags(track), _.pluck(selectedTags, 'id')));
+                    var publishedCond = _.isEqual(track.sharing, 'public') || !this.props.cursor.refine('showPublishedOnly').value;
+                    var visible = tagCond && publishedCond;
                     return (
                         <Track
                             visible={visible}
