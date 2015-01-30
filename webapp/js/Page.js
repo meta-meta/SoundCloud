@@ -43,6 +43,8 @@ define([
         updateTracks: function (me) {
             var tracks = [];
 
+            var attempts = 0;
+
             var getTracks = function (page) {
                 var pageSize = 200;
                 var params = {
@@ -54,6 +56,12 @@ define([
                 SC.get('/tracks', params, function (res, err) {
                     if (err) {
                         console.log(err);
+
+                        if(attempts < 3) {
+                            console.log('trying again: attempt ' + ++attempts);
+                            getTracks(0);
+                        }
+
                         return;
                     }
 
