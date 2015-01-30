@@ -5,6 +5,8 @@ define([
 ], function (_, React, Cursor, Forms, Common, TagView, TagEdit, TitleEdit, DescriptionEdit) {
     'use strict';
 
+    var CheckBox = Forms.CheckBox;
+
     var Track = React.createClass({
         mixins:[Cursor.ImmutableOptimizations(['cursor', 'tagsCursor', 'selectedTrackCursor'])],
 
@@ -61,12 +63,12 @@ define([
                 <div className="track" style={trackStyle}>
                     <TitleEdit
                         cursor={this.props.cursor.refine('title')}
-                        trackId={this.props.cursor.refine('id').value}
+                        trackId={t.id}
                     />
                     {tagWidget}
                     <DescriptionEdit
                         cursor={this.props.cursor.refine('description')}
-                        trackId={this.props.cursor.refine('id').value}
+                        trackId={t.id}
                     />
                     <div>
                         <i className={stateClassname}>:</i>
@@ -74,6 +76,12 @@ define([
                         <i className="fa fa-heart fa-2x">{t.favoritings_count}</i>
                         <i className="fa fa-comments fa-2x">{t.comment_count}</i>
                         <i className="fa fa-cloud-download fa-2x">{t.download_count}</i>
+                        <CheckBox
+                            value={_.isEqual(t.sharing, 'public')}
+                            onChange={this.onChangeSharing}
+                            label="Published"
+                            id={t.id}
+                        />
                     </div>
                     <div className="waveform clearfix bordered" style={waveformStyle} >
                         <div className="duration">{timestring(t.duration)}</div>
@@ -81,6 +89,19 @@ define([
                 </div>
             )
 
+        },
+
+        onChangeSharing: function (val) {
+            var sharing = val ? 'public' : 'private';
+            var t = this.props.cursor.value;
+
+            SC.put('/tracks/' + t.id , {track: {sharing: sharing}}, function(track, err){
+                if(err) {
+                    console.log('error updating track');
+                } else {
+                    this.props.cursor.onChange(_.extend(t, {sharing: sharing}));
+                }
+            }.bind(this));
         },
 
         editTags: function () {
