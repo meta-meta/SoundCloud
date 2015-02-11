@@ -24,7 +24,7 @@ define([
                     scrolling="no"
                     frameBorder="no"
                     // this widget will not load subsequent urls if we don't give it the secret key sauce from the start
-                    src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/126804883%3Fsecret_token%3Ds-ipah7&amp;color=23C5CC&amp;auto_play=false&amp;hide_related=true&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false"
+                    src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/190676187%3Fsecret_token%3Ds-JgIwM&amp;color=23C5CC&amp;auto_play=false&amp;hide_related=true&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false"
                 />
             )
         },
